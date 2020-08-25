@@ -3,6 +3,7 @@ from numpy import log, exp
 from numpy import argmax
 import json
 import numpy as np
+from tqdm import tqdm
 
 # to perform a deep copy
 # of the list of dictionaries
@@ -117,7 +118,7 @@ class MovieGroupProcess:
                 doc.append(self.vocab[idx])
         return doc
 
-    def fit(self, docs):
+    def fit(self, docs, DEBUG=False):
         """
         Cluster the input documents
         :param docs: list of list
@@ -178,7 +179,7 @@ class MovieGroupProcess:
 
         # new implementation
         # main engine.
-        for _iter in range(n_iters):
+        for _iter in tqdm(range(n_iters), desc="Running GSDMM topic model."):
             total_transfers = 0
             for i, doc_row in enumerate(self.doc_term_matrix):
                 doc = self._convert_doc_row(doc_row)
@@ -221,10 +222,11 @@ class MovieGroupProcess:
                     n_z_w[z_new][word] += 1
 
             cluster_count_new = sum([1 for v in m_z if v > 0])
-            print(
-                "In stage %d: transferred %d clusters with %d clusters populated"
-                % (_iter, total_transfers, cluster_count_new)
-            )
+            if DEBUG:
+                tqdm.write(
+                    "In stage %d: transferred %d clusters with %d clusters populated"
+                    % (_iter, total_transfers, cluster_count_new)
+                )
             if (
                 total_transfers == 0
                 and cluster_count_new == cluster_count
