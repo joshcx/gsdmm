@@ -131,7 +131,11 @@ class MovieGroupProcess:
 
         # new portion
         flattened = [(" ").join(doc) for doc in docs]
-        vec = CountVectorizer()
+        # tokenizer to allow one letter words/special chars.
+        # if not specified, one letter words, e.g. "k" or
+        # special chars like '|'
+        # will result in doc_term_matrix with an empty row.
+        vec = CountVectorizer(token_pattern="[a-zA-Z0-9$&+,:;=?@#|<>.^*()%!-]+")
         self.doc_term_matrix = vec.fit_transform(flattened).toarray()
         self.vocab = vec.get_feature_names()
         self.vocab_size = len(self.vocab)
