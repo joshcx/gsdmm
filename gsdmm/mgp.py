@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 
 class MovieGroupProcess:
-    def __init__(self, K=8, alpha=0.1, beta=0.1, n_iters=30):
+    def __init__(self, K=8, alpha=0.1, beta=0.1, n_iters=20):
         """
         A MovieGroupProcess is a conceptual model introduced by Yin and Wang 2014 to
         describe their Gibbs sampling algorithm for a Dirichlet Mixture Model for the
@@ -135,7 +135,9 @@ class MovieGroupProcess:
         # if not specified, one letter words, e.g. "k" or
         # special chars like '|'
         # will result in doc_term_matrix with an empty row.
-        vec = CountVectorizer(token_pattern="[a-zA-Z0-9$&+,:;=?@#|<>.^*()%!-]+")
+        vec = CountVectorizer(
+            token_pattern="[a-zA-Z0-9$&+,:;=?@#|<>.^*()%!-]+", ngram_range=(1, 2)
+        )
         self.doc_term_matrix = vec.fit_transform(flattened).toarray()
         self.vocab = vec.get_feature_names()
         self.vocab_size = len(self.vocab)
