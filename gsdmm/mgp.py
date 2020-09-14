@@ -3,6 +3,7 @@ from numpy import log, exp
 from numpy import argmax
 import json
 import numpy as np
+import math
 from tqdm import tqdm
 
 # to perform a deep copy
@@ -444,7 +445,7 @@ class MovieGroupProcess:
     def _topic_term(self):
         """
         Calculate a list of topic dictionaries,
-        with each dictionary containing the probability  
+        with each dictionary containing the probability
         of each word occurring in its respective topic.
         """
         n_z_w = self.cluster_word_distribution
@@ -483,7 +484,7 @@ class MovieGroupProcess:
             self.topic_term_matrix / self.topic_term_matrix.sum(axis=1)[:, None]
         )
         try:
-            assert self.topic_term_matrix.sum(axis=1).sum() == self.K
+            assert math.isclose(self.topic_term_matrix.sum(axis=1).sum(), self.K)
         except:
             for idx, row in enumerate(self.topic_term_matrix):
                 if row.sum() != self.K:
