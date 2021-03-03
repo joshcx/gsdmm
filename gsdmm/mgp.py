@@ -13,7 +13,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 
 class MovieGroupProcess:
-    def __init__(self, K=8, alpha=0.1, beta=0.1, n_iters=20):
+    def __init__(self, K=8, alpha=0.1, beta=0.1, n_iters=20, n_grams=2):
         """
         A MovieGroupProcess is a conceptual model introduced by Yin and Wang 2014 to
         describe their Gibbs sampling algorithm for a Dirichlet Mixture Model for the
@@ -43,6 +43,7 @@ class MovieGroupProcess:
         self.alpha = alpha
         self.beta = beta
         self.n_iters = n_iters
+        self.n_grams = n_grams
 
         # slots for computed variables
         self.number_docs = None
@@ -128,7 +129,13 @@ class MovieGroupProcess:
         :return: list of length len(doc)
             cluster label for each document
         """
-        alpha, beta, K, n_iters = self.alpha, self.beta, self.K, self.n_iters
+        alpha, beta, K, n_iters, n_grams = (
+            self.alpha,
+            self.beta,
+            self.K,
+            self.n_iters,
+            self.n_grams,
+        )
 
         # new portion
         flattened = [(" ").join(doc) for doc in docs]
@@ -137,7 +144,7 @@ class MovieGroupProcess:
         # special chars like '|'
         # will result in doc_term_matrix with an empty row.
         vec = CountVectorizer(
-            token_pattern="[a-zA-Z0-9$&+,:;=?@#|<>.^*()%!-]+", ngram_range=(1, 2)
+            token_pattern="[a-zA-Z0-9$&+,:;=?@#|<>.^*()%!-]+", ngram_range=(1, n_grams)
         )
         self.doc_term_matrix = vec.fit_transform(flattened).toarray()
         self.vocab = vec.get_feature_names()
