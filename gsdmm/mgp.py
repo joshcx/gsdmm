@@ -143,8 +143,15 @@ class MovieGroupProcess:
         # if not specified, one letter words, e.g. "k" or
         # special chars like '|'
         # will result in doc_term_matrix with an empty row.
+        # Need to set max_features to 10000
+        # so that if pyldavis is used for visualizations later,
+        # the matrices need to be converted from sparse to dense format.
+        # Hence if full vocab is used for n_grams=3, memory might run out,
+        # especially if run on WSL.
         vec = CountVectorizer(
-            token_pattern="[a-zA-Z0-9$&+,:;=?@#|<>.^*()%!-]+", ngram_range=(1, n_grams)
+            token_pattern="[a-zA-Z0-9$&+,:;=?@#|<>.^*()%!-]+",
+            ngram_range=(1, n_grams),
+            max_features=10000,
         )
         self.doc_term_matrix = vec.fit_transform(flattened).toarray()
         self.vocab = vec.get_feature_names()
